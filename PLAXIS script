@@ -1,0 +1,39 @@
+#Boilerplate
+from plxscripting.easy import *
+s_i , g_i = new_server('localhost', 10000, password ='hxY7=94XXs#CfsS6')
+
+import math
+
+from math import tan, pi
+
+#Project setup
+g_i.Project.setproperties("Title", "Vertical Pullout Model", "UnitForce", "kN", "UnitLength", "m", "UnitTime", "day")
+g_i.Project.setproperties("ModelType", "Plane strain", """ElementType""", '''15-Noded''') #sets up project properties
+g_i.SoilContour.initializerectangular(0, 13.10, 30, 37.10) #xmin ymin, xmax, ymax)
+g_i.borehole(0) #denotes the borehole
+g_i.soillayer(7) #denotes the soil layer and corresponding thickness
+g_i.soillayer(3)
+g_i.soillayer(14)
+g_i.soillayer(6.4)
+
+#Set Fill properties
+fill_params = [ ("SoilModel", "Mohr-Coulomb"), ("DrainageType", "Drained"), ("Identification", "Fill"), ("gammaUnsat", 18), ("gammaSat", 20), ("Eref", 10000), ("phi", 25) ]
+
+fill_MC = g_i.soilmat(*fill_params)
+g_i.Soil_1.Material = fill_MC
+
+MC_params = [ ("SoilModel", "Mohr-Coulomb"), ("DrainageType", "Undrained B"), ("Identification", "MC"), ("gammaUnsat", 16), ("gammaSat", 16), ("Eref", 12500), ("suref", 30) ]
+MC_MC = g_i.soilmat(*MC_params)
+
+g_i.Soil_2.Material = MC_MC
+
+OAC_params = [ ("SoilModel", "Mohr-Coulomb"), ("DrainageType", "Drained"), ("Identification", "OA(C)"), ("gammaUnsat", 20), ("gammaSat", 20), ("Eref", 12500), ("suref", 30) ]
+OAC_MC = g_i.soilmat(*OAC_params)
+g_i.Soil_3.Material = OAC_MC
+
+OAA_params = [ ("SoilModel", "Mohr-Coulomb"), ("DrainageType", "Drained"), ("Identification", "OA(A)"), ("gammaUnsat", 20), ("gammaSat", 20), ("Eref", 12500), ("suref", 30) ]
+OAA_MC = g_i.soilmat(*OAA_params)
+g_i.Soil_4.Material = OAA_MC
+
+
+g_i.Line_1_1.LineLoad.qy_start[g_i.Phase_1] = -15
